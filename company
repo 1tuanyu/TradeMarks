@@ -1,1 +1,44 @@
+import os
+
+work_adress="C:\\Users\\Administrator.SC-201609010932\\Desktop\\扫描文件\\A命名注册号"
+os.chdir(work_adress)
+
+f = open('C:\\Users\\Administrator.SC-201609010932\\Desktop\\扫描文件\\注册号.txt')
+#获取TXT文本上的注册号
+Num = [line.replace('\n', '') for line in f.readlines()]
+App_num = []
+Switch = False
+i = 0
+
+for item in Num:
+     if item == '注册商标变更证明':
+          pass
+     elif item in App_num:
+          pass
+     elif len(item) > 8:
+          pass
+     else:
+          App_num.append(item)
+
+#执行倒序方法获得正确顺序
+App_num.reverse()
+
+
+if Switch == False:
+     Change_Type = input("请输入批量修改文件类型：")
+     for file in os.listdir(work_adress):
+          f = os.path.splitext(file)[1]
+          e = App_num[i]
+          n = str(e) + "-" + Change_Type
+          new_file = n + f
+          os.rename(file, new_file)
+          i += 1
+else:
+     Change_Type = input("请输入二次修改的文件类型：")
+     for file in os.listdir(work_adress):
+          #注意此处的e是含有-的
+          e, f = os.path.splitext(file)
+          n = e.split('-')[0]
+          new_file = n +'-' + Change_Type +f
+          os.rename(file, new_file)
 
