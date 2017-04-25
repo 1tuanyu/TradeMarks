@@ -1,0 +1,26 @@
+import requests
+import itchat
+
+key = 'b3ed868eee7046749a3f1076aecb1be5'
+
+def get_response(msg):
+     apiUrl = 'http://www.tuling123.com/openapi/api'
+     data = {
+          'key' : key,
+          'info' : msg,
+          'userid' : 'Gianna'
+     }
+     try:
+          r = requests.post(apiUrl, data=data).json()
+          return r.get('text')
+     except:
+          return
+
+@itchat.msg_register(itchat.content.TEXT)
+def tuling_reply(msg):
+     defalutReply = '我收到' + msg['Text']
+     reply = get_response(msg['Text'])
+     return reply or defalutReply
+
+itchat.auto_login(hotReload = True)
+itchat.run()
