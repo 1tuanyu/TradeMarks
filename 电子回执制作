@@ -1,0 +1,100 @@
+from openpyxl import load_workbook
+from openpyxl import Workbook
+from docx import Document
+from docx.shared import Pt
+from docx.shared import Inches
+from docx.enum.text import WD_ALIGN_PARAGRAPH
+import os
+
+wb = load_workbook("E:\\流程共享\\收文\\2017年收文表格\\2017-04-18-收文表格.xlsx")
+ws = wb.get_sheet_by_name('Sheet3')
+
+document = Document()
+
+k, j = 0, 0
+
+Bus, Cus, Name, Clas, Td, Follwer = ['']*200,  ['']*200,  ['']*200 , ['']*200,  ['']*200,  ['']*200      #创建6个200个空值的列表，用以占位
+Word = []
+
+def add_title():            #用以添加回执单的标题
+
+     title = document.add_paragraph()      #宋体小二,加粗,居中
+     title_format = title.paragraph_format         #获取title的format（排版）属性
+     title_format.alignment = WD_ALIGN_PARAGRAPH.CENTER        #设置居中
+     run = title.add_run('商标文件回执通知单')
+     run.bold = True          #设置加粗
+     font = run.font
+     font.name = '宋体(中文正文) '       #设置字体
+     font.size = Pt(16)       #设置字体大小
+     
+
+def add_style(text):        #正文格式设置函数
+     par = document.add_paragraph()
+     par_format = par.paragraph_format
+     par_format.line_spacing = Pt(12)
+     run = par.add_run(text)
+     font = run.font
+     font.name = '宋体'       #设置字体
+     font.size = Pt(12)       #设置字体大小
+     
+def data_write_in( bus, cus, clas, name, td, follwer ):         #数据格式写入函数
+
+     add_title()
+     add_style( '申请人:' + cus )
+     add_style( '文件类型:' + bus)
+     add_style(  '商标名称:' + str(name) + '\n' + '商标注册号:' + str(td) + '\n' + '商标类别:' + str(clas) )
+     add_style( '跟进人:' + follwer )
+     add_style( '客户确认:' + '\n' + '\n' + '\n'  )
+     add_style( '备注:' + '\n' + '1.请在回执确认栏盖章/签字以示贵司收到官方文件,并将此回执通过扫描形式通知我司相关跟进人。' + '\n' + '2.联系方式：400-0755-711；地址：深圳市南山区软件产业基地4A602室。' )
+
+Bus[0] = ws.cell(row = 2, column = 1).value         #将第一个客户名，注册号，类别，跟进人添加到列表首项
+Cus[0] = ws.cell(row = 2, column = 4).value
+Name[0]  = ws.cell(row = 2, column = 5).value
+Clas[0] = str(ws.cell(row = 2, column = 6).value)
+Td[0] = ws.cell(row = 2, column = 7).value
+Follwer[0] = ws.cell(row = 2, column = 8).value
+   
+for i in range(3, 300):
+    bus = str(ws.cell(row = i, column = 1).value).strip()
+    cus = str(ws.cell(row = i, column = 4).value).strip()
+    name = str(ws.cell(row = i, column = 5).value).strip()
+    clas = str(ws.cell(row = i, column = 6).value).strip()
+    td = str(ws.cell(row = i, column = 7).value).strip()
+    follwer = str(ws.cell(row = i, column = 8).value).strip()
+    if cus == 'None':
+        j = i - 1
+        break
+    elif cus in Cus:
+        Clas[k] = Clas[k] + '、' + clas
+        Td[k] = Td[k] + '、' + td
+        Name[k] = Name[k] + '、' + name
+    else:
+        k += 1          #如果客户名不是在列表里，就赋值到下一个空值里去
+        Bus.append(bus)
+        Cus[k] = cus
+        Name[k] = name
+        Clas[k] = clas
+        Td[k] = td
+        Follwer[k] = follwer
+
+def strip_list(L):
+
+    for num in range(0, len(L)):
+        if '' in L:
+            L.remove('')
+        elif "None" in L:
+            L.remove('None')
+        else:
+            pass
+
+strip_list(Cus)
+strip_list(Bus)
+strip_list(Name)
+strip_list(Clas)
+strip_list(Td)
+strip_list(Follwer)
+
+for n in range(0, len(Cus)):
+    data_write_in( Bus[n], Cus[n],  Clas[n], Name[n], Td[n], Follwer[n] )
+
+document.save('test1.docx')
