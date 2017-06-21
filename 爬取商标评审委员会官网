@@ -17,4 +17,4 @@ bs = BeautifulSoup(html.read(), 'html5lib')
 tdLists = bs.findAll("li")
 for td in tdLists:
     if "定书" in td.get_text():
-        print(td)
+        print(td.find("a").get("href"))
