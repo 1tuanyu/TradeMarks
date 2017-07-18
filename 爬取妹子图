@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 import urllib
 import re
 import ssl
-import random
+import time
 
 url = "https://jandan.net/ooxx"
 ssl._create_default_https_context = ssl._create_unverified_context
@@ -21,16 +21,17 @@ def get_url(url):
     req = urllib.request.Request(url, headers=hdr)
     html = urllib.request.urlopen(req)
     bs = BeautifulSoup(html.read(), 'html5lib')
-    pictures = bs.findAll('img')
+    pictures = bs.find_all('a', class_='view_img_link')
     for pic in pictures:
-        k = pic.get('src')
-        e = k.split('/', 4)[-1]
-        pic_url = "http:" + k
-        print(e)
-        return pic_url, e
+        e = pic.get('href')
+        f = e.split('/', 4)[-1]
+        print(f)
+        pic_url = "http:" + e
+        return pic_url,  f
 
-for i in range(1, 179):
+for i in range(1, 200):
     new_url = url + '/page-' + str(i) + '#comments'
     aim_url, name = get_url(new_url)
     urlretrieve(aim_url, name)
+    time.sleep(5)
 
